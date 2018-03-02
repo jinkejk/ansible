@@ -1,0 +1,49 @@
+---
+- name: copy hosts file to nodes
+  template:
+    src: hosts
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: "u=rw,g=r,o=r"
+   
+- name: generate rsa
+  shell: yes | ssh-keygen -N "" -f /root/.ssh/id_rsa 
+
+- name: template master's rsa to nodes
+  template:
+    src: id_rsa.pub
+    dest: /root/.ssh/id_rsa.pub.master
+    owner: root
+    group: root
+    mode: "u=rw,g=r,o=r"
+
+- name: file authorized_keys exist?
+  command: test -e /root/.ssh/authorized_keys
+  register: result
+  failed_when: no
+
+- name: touch file authorized_keys
+  file:
+    path: /root/.ssh/authorized_keys
+    state: touch
+    mode: "u=rw,g=r,o=r" 
+  when: not result
+ 
+- name: add master's rsa to authorized_keys
+  shell: cat /root/.ssh/id_rsa.pub.master >> /root/.ssh/authorized_keys
+  
+- name: romove temp file
+  file: 
+    path: /root/.ssh/id_rsa.pub.master 
+    state: absent
+
+
+
+
+
+
+
+
+
+

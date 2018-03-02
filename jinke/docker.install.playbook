@@ -1,0 +1,12 @@
+---
+- hosts: slaves
+  remote_user: root
+  roles:
+  - role: suzuki-shunsuke.docker-ce-centos
+    docker_centos_version: 17.06.0.ce-1.el7.centos.x86_64
+    docker_centos_state: started
+    docker_centos_enabled: yes
+    docker_centos_users:
+    - root
+    become: yes
+  #- role: wasilak.centos-kernel
